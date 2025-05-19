@@ -1,99 +1,107 @@
 /***********************************************************
-    statutil.c -- ï¿½ï¿½ï¿½Ï—Êƒfï¿½[ï¿½^
+    statutil.c -- ‘½•Ï—Êƒf[ƒ^
 ***********************************************************/
-#include "matutil.c"   /* ï¿½sï¿½ï¿½pï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½W */
-#include <errno.h>     /* {\tt errno} */
-#include <limits.h>    /* {\TT INT\_MAX} */
-#include <math.h>      /* {\tt fabs()} */
-#include <string.h>    /* {\tt strchr()} */
+#include <errno.h>  /* {\tt errno} */
+#include <limits.h> /* {\TT INT\_MAX} */
+#include <math.h>   /* {\tt fabs()} */
+#include <string.h> /* {\tt strchr()} */
 
-#define READERROR -1.00E+37;  /* ï¿½Çï¿½ï¿½Gï¿½ï¿½ï¿½[ */
-#define MISSING   -0.98E+37;  /* ï¿½ï¿½ï¿½ï¿½ï¿½l */
+#include "matutil.c" /* s—ñ—p‚Ì¬“¹‹ïW */
+
+#define READERROR -1.00E+37; /* “ÇƒGƒ‰[ */
+#define MISSING -0.98E+37;   /* Œ‡‘ª’l */
 #define readerror(x) ((x) < -0.99E+37)
-#define missing(x)   ((x) < -0.97E+37)
+#define missing(x) ((x) < -0.97E+37)
 
-double getnum(FILE *datafile)
-{
-    double x;
-    char *rest, s[83];
+double getnum(FILE *datafile) {
+  double x;
+  char *rest, s[83];
 
-    errno = 0;
-    do {
-        if (fscanf(datafile, "%81s%*[^ \t\n]", s) != 1)
-            return READERROR;
-    } while (strchr("0123456789+-.", s[0]) == NULL);
-    if (s[0] == '.' && s[1] == '\0') return MISSING;
-    s[81] = '?';  s[82] = '\0';  x = strtod(s, &rest);
-    if (errno == 0 && *rest == '\0' && fabs(x) <= 0.97E+37)
-        return x;
-    return READERROR;
+  errno = 0;
+  do {
+    if (fscanf(datafile, "%81s%*[^ \t\n]", s) != 1) return READERROR;
+  } while (strchr("0123456789+-.", s[0]) == NULL);
+  if (s[0] == '.' && s[1] == '\0') return MISSING;
+  s[81] = '?';
+  s[82] = '\0';
+  x = strtod(s, &rest);
+  if (errno == 0 && *rest == '\0' && fabs(x) <= 0.97E+37) return x;
+  return READERROR;
 }
 
-FILE *open_data(char *filename, int *addr_n, int *addr_m)
-{
-    FILE *datafile;
-    double x, y;
+FILE *open_data(char *filename, int *addr_n, int *addr_m) {
+  FILE *datafile;
+  double x, y;
 
-    *addr_n = *addr_m = 0;
-    if ((datafile = fopen(filename, "r")) == NULL) {
-        fprintf(stderr, "ï¿½fï¿½[ï¿½^ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½.\n");
-        return NULL;
-    }
-    x = getnum(datafile);  y = getnum(datafile);
-    if (x <= 0 || x > INT_MAX || y <= 0 || y > INT_MAX) {
-        fprintf(stderr, "ï¿½sï¿½ï¿½ï¿½Eï¿½ñ”‚ï¿½ï¿½Ç‚ß‚Ü‚ï¿½ï¿½ï¿½.\n");
-        fclose(datafile);  return NULL;
-    }
-    *addr_n = (int)x;  *addr_m = (int)y;
-    fprintf(stderr, "%d ï¿½s %d ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½Å‚ï¿½.\n",
-        *addr_n, *addr_m);
-    return datafile;
-}
-
-int read_data(FILE *datafile, int n, int m, matrix x)
-{
-    int i, j, err;
-    unsigned long missings;
-    double t;
-
-    err = 0;  missings = 0;
-    for (i = 0; i < n; i++) for (j = 0; j < m; j++) {
-        if (err) {  x[j][i] = READERROR;  continue;  }
-        t = getnum(datafile);  x[j][i] = (SCALAR)t;
-        if (! missing(t)) continue;
-        if (readerror(t)) {
-            fprintf(stderr, "ï¿½Çï¿½ï¿½İƒGï¿½ï¿½ï¿½[(%d,%d)\n", i+1, j+1);
-            err = 2;
-        } else missings++;
-    }
-    fprintf(stderr, "ï¿½Çï¿½ï¿½İIï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½l %lu ï¿½ï¿½)\n", missings);
-    return err | (missings != 0);
-}
-
-#ifdef TEST  /* ï¿½È‰ï¿½ï¿½Ígï¿½pï¿½ï¿½ */
-
-int main(void)
-{
-    int i, j, n, m;
-    matrix x;  /* {\tt matrix} ï¿½^ï¿½ï¿½ {\tt matutil.c} ï¿½Å’ï¿½` */
-    FILE *datafile;
-    char filename[256];
-
-    printf("ï¿½fï¿½[ï¿½^ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½? ");
-    scanf("%255s", filename);
-    datafile = open_data(filename, &n, &m);     /* ï¿½fï¿½[ï¿½^ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ */
-    if (datafile == NULL) return 1;  /* ï¿½ï¿½ï¿½s */
-    x = new_matrix(m, n);                       /* ï¿½sï¿½ï¿½ğ¶ï¿½ */
-    read_data(datafile, n, m, x);               /* ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚ï¿½ */
+  *addr_n = *addr_m = 0;
+  if ((datafile = fopen(filename, "r")) == NULL) {
+    fprintf(stderr, "ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ªŠJ‚«‚Ü‚¹‚ñ.\n");
+    return NULL;
+  }
+  x = getnum(datafile);
+  y = getnum(datafile);
+  if (x <= 0 || x > INT_MAX || y <= 0 || y > INT_MAX) {
+    fprintf(stderr, "s”E—ñ”‚ª“Ç‚ß‚Ü‚¹‚ñ.\n");
     fclose(datafile);
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < m; j++)
-            if (readerror(x[j][i]))    printf(" E");  /* ï¿½Çï¿½ï¿½ï¿½ï¿½s */
-            else if (missing(x[j][i])) printf(" .");  /* ï¿½ï¿½ï¿½ï¿½ï¿½l */
-            else             printf(" %g", x[j][i]);  /* ï¿½ï¿½ï¿½ï¿½ */
-        printf("\n");
-    }
-    return 0;
+    return NULL;
+  }
+  *addr_n = (int)x;
+  *addr_m = (int)y;
+  fprintf(stderr, "%d s %d —ñ‚Ìƒf[ƒ^‚Å‚·.\n", *addr_n, *addr_m);
+  return datafile;
 }
 
-#endif  /* #ifdef TEST */
+int read_data(FILE *datafile, int n, int m, matrix x) {
+  int i, j, err;
+  unsigned long missings;
+  double t;
+
+  err = 0;
+  missings = 0;
+  for (i = 0; i < n; i++)
+    for (j = 0; j < m; j++) {
+      if (err) {
+        x[j][i] = READERROR;
+        continue;
+      }
+      t = getnum(datafile);
+      x[j][i] = (SCALAR)t;
+      if (!missing(t)) continue;
+      if (readerror(t)) {
+        fprintf(stderr, "“Ç‚İƒGƒ‰[(%d,%d)\n", i + 1, j + 1);
+        err = 2;
+      } else
+        missings++;
+    }
+  fprintf(stderr, "“Ç‚İI—¹ (Œ‡‘ª’l %lu ŒÂ)\n", missings);
+  return err | (missings != 0);
+}
+
+#ifdef TEST /* ˆÈ‰º‚Íg—p—á */
+
+int main(void) {
+  int i, j, n, m;
+  matrix x; /* {\tt matrix} Œ^‚Í {\tt matutil.c} ‚Å’è‹` */
+  FILE *datafile;
+  char filename[256];
+
+  printf("ƒf[ƒ^ƒtƒ@ƒCƒ‹–¼? ");
+  scanf("%255s", filename);
+  datafile = open_data(filename, &n, &m); /* ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğŠJ‚­ */
+  if (datafile == NULL) return 1;         /* ¸”s */
+  x = new_matrix(m, n);                   /* s—ñ‚ğ¶¬ */
+  read_data(datafile, n, m, x);           /* ƒf[ƒ^‚ğ“Ç‚Ş */
+  fclose(datafile);
+  for (i = 0; i < n; i++) {
+    for (j = 0; j < m; j++)
+      if (readerror(x[j][i])) printf(" E"); /* “Ç¸”s */
+      else if (missing(x[j][i]))
+        printf(" ."); /* Œ‡‘ª’l */
+      else
+        printf(" %g", x[j][i]); /* ³í */
+    printf("\n");
+  }
+  return 0;
+}
+
+#endif /* #ifdef TEST */

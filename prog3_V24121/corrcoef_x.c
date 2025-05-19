@@ -99,5 +99,10 @@ int main(void) {
   corrcoef1(n, x, y);
   corrcoef2(n, x, y);
   corrcoef3(n, x, y);
+
+  printf("\nã‚©‚ç20–¼•ª‚Ìƒf[ƒ^\n");
+  corrcoef1(20, x, y);
+  corrcoef2(20, x, y);
+  corrcoef3(20, x, y);
   return 0;
 }

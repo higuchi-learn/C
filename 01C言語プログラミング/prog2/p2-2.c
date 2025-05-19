@@ -1,6 +1,7 @@
-#include<stdio.h>
+#include <stdio.h>
 
-int main(void){	
+int main(void)
+{
 	double p;
 	p = 4.26454;
 
@@ -8,6 +9,6 @@ int main(void){
 
 	p = 8.26454;
 	printf("点が変更され%.3fになりました。\n", p);
-      
+
 	return 0;
 }
