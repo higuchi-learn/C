@@ -249,4 +249,3 @@ int main(void)
     printf("Ï >> z = %s\n", c_string(c_mul(z1, z2)));
     printf("¤ >> z = %s\n", c_string(c_div(z1, z2)));
     return 0;
-}
