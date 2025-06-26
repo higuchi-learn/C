@@ -13,7 +13,7 @@ double f(double x) /* $f(x) = 0$ ‚ğ‰ğ‚­ŠÖ” $f(x)$ */
 
 double f_prime(double x) /* $f(x)$ ‚Ì“±ŠÖ” */
 {
-  return 3 * x * x * x;
+  return 4 * x * x * x;
 }
 
 double newton(double x) /* ‰Šú’l $x$ ‚ğ—^‚¦‚Ä $f(x) = 0$ ‚Ì‰ğ‚ğ•Ô‚· */
