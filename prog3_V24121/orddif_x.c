@@ -17,7 +17,7 @@ double Fx(double x, double y) /* $F_{x}(x, y)$ */
 
 double Fxx(double x, double y) /* $F_{xx}(x, y)$ */
 {
-  return 0;
+  return -12 + Fx(x, y);
 }
 
 double euler(int n, int nprint, double x0, double y0, double xn) /* Euler–@ */
