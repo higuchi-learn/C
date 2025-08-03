@@ -7,17 +7,17 @@
 
 double F(double x, double y) /* $F(x, y)$ */
 {
-  return y - 12 * x + 3;
+  return x + y;
 }
 
 double Fx(double x, double y) /* $F_{x}(x, y)$ */
 {
-  return -12 + F(x, y);
+  return 1 + F(x, y);
 }
 
 double Fxx(double x, double y) /* $F_{xx}(x, y)$ */
 {
-  return Fx(x,y);
+  return Fx(x, y);
 }
 
 double euler(int n, int nprint, double x0, double y0, double xn) /* Euler–@ */
@@ -36,7 +36,8 @@ double euler(int n, int nprint, double x0, double y0, double xn) /* Euler–@ */
   return y;
 }
 
-double tayl3(int n, int nprint, double x0, double y0, double xn) /* 3ŸTaylor‹‰” */
+double tayl3(int n, int nprint, double x0, double y0,
+             double xn) /* 3ŸTaylor‹‰” */
 {
   int i;
   double x, y, h;
@@ -52,7 +53,8 @@ double tayl3(int n, int nprint, double x0, double y0, double xn) /* 3ŸTaylor‹‰
   return y;
 }
 
-double runge4(int n, int nprint, double x0, double y0, double xn) /* 4ŸRunge-Kutta–@ */
+double runge4(int n, int nprint, double x0, double y0,
+              double xn) /* 4ŸRunge-Kutta–@ */
 {
   int i;
   double x, y, h, h2, f1, f2, f3, f4;
@@ -74,16 +76,16 @@ double runge4(int n, int nprint, double x0, double y0, double xn) /* 4ŸRunge-Ku
 }
 
 int main(void) {
-  int n = 16, i;
+  int n = 10, i;
 
   printf("\nEuler–@:          n = %d\n", n);
-  (void)euler(n, n / 4, 0, 1, 1);
+  (void)euler(n, n / 10, 0, 1, 1);
   printf("\n3ŸEuler–@:       n = %d\n", n);
-  (void)tayl3(n, n / 4, 0, 1, 1);
+  (void)tayl3(n, n / 10, 0, 1, 1);
   printf("\n4ŸRunge-Kutta–@: n = %d\n", n);
-  (void)runge4(n, n / 4, 0, 1, 1);
+  (void)runge4(n, n / 10, 0, 1, 1);
   printf("\n³‰ğ\n");
-  for (i = 1; i <= 4; i++)
-    printf("% -14g % -14g\n", i / 4.0, 12 * (i / 4.0) + 9 - 8 * exp(i / 4.0));
+  for (i = 1; i <= 10; i++)
+    printf("% -14g % -14g\n", i / 10.0, 2 * exp(i / 10.0) - (i / 10.0) - 1);
   return 0;
 }

@@ -14,7 +14,7 @@ int main(void) {
     printf("Invalid input\n");
     return 0;
   }
-  printf("x * 2^n = %d\n", 3 << n);
-  printf("x * 2^n in hex = %X\n", 3 << n);
+  printf("x * 2^n = %d\n", x << n);
+  printf("x * 2^n in hex = %X\n", x << n);
   return 0;
 }

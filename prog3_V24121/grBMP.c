@@ -67,7 +67,7 @@ void gr_BMP(char *filename)  /* BMPファイル出力 */
 
 #endif  /* GRBMP_C */
 
-#if 1  /* テスト */
+#if 0  /* テスト */
 int main(void)
 {
     int x, y;
